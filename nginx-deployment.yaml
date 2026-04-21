@@ -1,21 +1,48 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: edis-nginx-app
-  namespace: argocd
+  name: nginx
+  namespace: edis
 spec:
-  project: default
-  source:
-    repoURL: 'https://github.com/Aburmaileh7/edis-gitops.git' 
-    targetRevision: main
-    path: .
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: edis
+  replicas: 12
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+    syncPolicy:
+     automated:
+       prune: true
+       selfHeal: true
+     syncOptions:
+         - CreateNamespace=true
+ 
+
+          #kind: Application
+          #metadata:
+          #  name: edis-nginx-app
+          #  namespace: argocd
+          #spec:
+          #  project: default
+          #  source:
+          #    repoURL: 'https://github.com/Aburmaileh7/edis-gitops.git' 
+          #    targetRevision: main
+          #    path: .
+          #  destination:
+          #    server: 'https://kubernetes.default.svc'
+          #    namespace: edis
   
-  syncPolicy:
-    automated:
-      prune: true     
-      selfHeal: true  
-    syncOptions:
-      - CreateNamespace=true
+           #  syncPolicy:
+           #    automated:
+           #      prune: true     
+           #      selfHeal: true  
+           #    syncOptions:
+           #      - CreateNamespace=true
